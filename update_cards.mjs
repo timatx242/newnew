@@ -14,6 +14,7 @@ const SHEET_API_URL = "https://script.googleusercontent.com/macros/echo?user_con
 // === Пути ===
 const IMAGES_DIR = path.join(__dirname, "image");
 const HTML_FILE = path.join(__dirname, "index.html");
+const VIEW_TEMPLATE = path.join(__dirname, "view.html");
 
 (async () => {
   const res = await fetch(SHEET_API_URL);
@@ -32,6 +33,7 @@ const HTML_FILE = path.join(__dirname, "index.html");
     };
   });
 
+  // Генерация галереи для index.html
   const generatedHTML = cards.map(card => `
     <div class="card" data-title="${card.name}" data-description="" data-image="${card.imgPath}" data-pdf="${card.pdf}">
       <img src="${card.imgPath}" alt="${card.name}">
@@ -45,5 +47,25 @@ const HTML_FILE = path.join(__dirname, "index.html");
   );
 
   fs.writeFileSync(HTML_FILE, html, "utf8");
-  console.log("✅ Готово! Файл index.html обновлён.");
+
+  // Генерация отдельных страниц для каждой картинки
+  const viewTemplate = fs.readFileSync(VIEW_TEMPLATE, "utf8");
+  function slugify(str) {
+    return str.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-+/g, '-');
+  }
+  for (const card of cards) {
+    let page = viewTemplate
+      .replace(/<title[^>]*>.*?<\/title>/, `<title>${card.name}</title>`)
+      .replace('id="mainImage" class="main-image" src="" alt=""', `id="mainImage" class="main-image" src="${card.imgPath}" alt="${card.name}"`)
+      .replace('id="mainTitle" class="main-title"></div>', `id="mainTitle" class="main-title">${card.name}</div>`)
+      .replace('id="downloadBtn" href="#" download', `id="downloadBtn" href="${card.pdf}" download`);
+    // Удаляем скрипт, который парсит параметры из URL
+    page = page.replace(/<script>[\s\S]*?mainImg\.src = img;[\s\S]*?mainTitle\.textContent = title;[\s\S]*?document\.title = title \|\| 'View Image';[\s\S]*?let pdfUrl = null;[\s\S]*?\/\/ Получаем все картинки из index\.html \(парсим DOM\)[\s\S]*?gallery\.appendChild\(el\);[\s\S]*?\}\);[\s\S]*?\/\/ Кнопка поделиться[\s\S]*?\}\);[\s\S]*?<\/script>/, '');
+    // Оставляем только кнопку share (копировать ссылку)
+    page = page.replace('</main>', `</main>\n<script>\nconst shareBtn = document.getElementById('shareBtn');\nshareBtn.addEventListener('click', () => {\n  const shareUrl = window.location.href;\n  if (navigator.share) {\n    navigator.share({ title: document.title, url: shareUrl });\n  } else {\n    navigator.clipboard.writeText(shareUrl).then(() => {\n      shareBtn.textContent = 'Copied!';\n      setTimeout(() => shareBtn.textContent = 'Share', 1500);\n    });\n  }\n});\n</script>`);
+    const fileName = slugify(card.name) + ".html";
+    fs.writeFileSync(path.join(__dirname, fileName), page, "utf8");
+  }
+
+  console.log("✅ Готово! Файлы для каждой картинки созданы.");
 })();

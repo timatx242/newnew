@@ -128,8 +128,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('click', () => {
-    const image = card.getAttribute('data-image');
     const title = card.getAttribute('data-title');
-    window.open(`view.html?img=${encodeURIComponent(image)}&title=${encodeURIComponent(title)}`, '_blank');
+    const slug = title.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-+/g, '-');
+    window.location.href = `${slug}.html`;
   });
 });
