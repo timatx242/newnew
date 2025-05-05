@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Image</title>
+  <title id="dynamicTitle">View Image</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .main-image {
@@ -18,8 +18,30 @@
     .main-title {
       text-align: center;
       font-size: 1.3rem;
-      margin-bottom: 30px;
+      margin-bottom: 18px;
       font-weight: 600;
+    }
+    .main-actions {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .main-actions button, .main-actions a {
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+      display: inline-block;
+    }
+    .main-actions button:hover, .main-actions a:hover {
+      background: #0d47a1;
     }
     .random-gallery {
       max-width: 1200px;
@@ -61,7 +83,10 @@
 <main style="margin-top: 110px;">
   <img id="mainImage" class="main-image" src="" alt="">
   <div id="mainTitle" class="main-title"></div>
-  <h3 style="text-align:center; margin-bottom:18px;">28 Random Images</h3>
+  <div class="main-actions">
+    <a id="downloadBtn" href="#" download>Download</a>
+    <button id="shareBtn" type="button">Share</button>
+  </div>
   <div class="random-gallery" id="randomGallery"></div>
 </main>
 <footer class="site-footer">
@@ -88,6 +113,9 @@ const img = getParam('img');
 const title = getParam('title');
 mainImg.src = img;
 mainTitle.textContent = title;
+document.title = title || 'View Image';
+
+let pdfUrl = null;
 
 // Получаем все картинки из index.html (парсим DOM)
 fetch('index.html')
@@ -97,15 +125,27 @@ fetch('index.html')
     const doc = parser.parseFromString(html, 'text/html');
     const cards = [...doc.querySelectorAll('.card')].map(card => ({
       image: card.getAttribute('data-image'),
-      title: card.getAttribute('data-title')
-    })).filter(card => card.image !== img); // исключаем текущую
-
-    // Перемешиваем и берём 28 случайных
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
+      title: card.getAttribute('data-title'),
+      pdf: card.getAttribute('data-pdf')
+    }));
+    // Найти pdf для текущей картинки
+    const current = cards.find(card => card.image === img);
+    if (current && current.pdf && current.pdf !== '#') {
+      pdfUrl = current.pdf;
+      const downloadBtn = document.getElementById('downloadBtn');
+      downloadBtn.href = pdfUrl;
+      downloadBtn.setAttribute('download', '');
+      downloadBtn.style.display = '';
+    } else {
+      document.getElementById('downloadBtn').style.display = 'none';
     }
-    const random28 = cards.slice(0, 28);
+    // 28 случайных других
+    const randomCards = cards.filter(card => card.image !== img);
+    for (let i = randomCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [randomCards[i], randomCards[j]] = [randomCards[j], randomCards[i]];
+    }
+    const random28 = randomCards.slice(0, 28);
     const gallery = document.getElementById('randomGallery');
     random28.forEach(card => {
       const el = document.createElement('img');
@@ -118,6 +158,24 @@ fetch('index.html')
       gallery.appendChild(el);
     });
   });
+
+// Кнопка поделиться
+const shareBtn = document.getElementById('shareBtn');
+shareBtn.addEventListener('click', () => {
+  const shareUrl = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      url: shareUrl
+    });
+  } else {
+    // fallback: копировать ссылку
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      shareBtn.textContent = 'Copied!';
+      setTimeout(() => shareBtn.textContent = 'Share', 1500);
+    });
+  }
+});
 </script>
 <script src="script.js"></script>
 </body>
