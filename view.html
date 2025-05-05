@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Image</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .main-image {
+      display: block;
+      margin: 40px auto 20px auto;
+      max-width: 400px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .main-title {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+    .random-gallery {
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 18px;
+      padding: 0 10px;
+    }
+    .random-gallery img {
+      width: 100%;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .random-gallery img:hover {
+      transform: scale(1.04);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <a href="index.html">
+        <img src="logo.jpg" alt="Logo">
+      </a>
+    </div>
+  </div>
+  <div class="header-center"></div>
+  <div class="header-right">
+    <button id="termsBtn" class="terms-button">
+      <img src="Terms of Use.png" alt="Terms of Use" />
+    </button>
+  </div>
+</header>
+<main style="margin-top: 110px;">
+  <img id="mainImage" class="main-image" src="" alt="">
+  <div id="mainTitle" class="main-title"></div>
+  <h3 style="text-align:center; margin-bottom:18px;">28 Random Images</h3>
+  <div class="random-gallery" id="randomGallery"></div>
+</main>
+<footer class="site-footer">
+  <div class="footer-links">
+      <a href="/terms" class="footer-link">Terms of use</a>
+      <a href="contact.html" class="footer-link">Contact us</a>
+  </div>
+  <div class="footer-copyright">
+      Copyright © 2025 <a href="https://colorpdf.com">colorpdf.com</a>
+  </div>
+  <div class="footer-disclaimer">
+      Copying, by any method, of material on this site for any purpose other than an individual's personal reference without the written permission of the copyright owner, is prohibited. All rights to the published coloring pages, drawing images, cliparts, pictures and other materials on colorpdf.com belong to their respective authors/publishers, and the Website Administration does not bear responsibility for their use. All the materials are for personal use only.
+  </div>
+</footer>
+<script>
+// Получаем параметры из URL
+function getParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
+const mainImg = document.getElementById('mainImage');
+const mainTitle = document.getElementById('mainTitle');
+const img = getParam('img');
+const title = getParam('title');
+mainImg.src = img;
+mainTitle.textContent = title;
+
+// Получаем все картинки из index.html (парсим DOM)
+fetch('index.html')
+  .then(res => res.text())
+  .then(html => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const cards = [...doc.querySelectorAll('.card')].map(card => ({
+      image: card.getAttribute('data-image'),
+      title: card.getAttribute('data-title')
+    })).filter(card => card.image !== img); // исключаем текущую
+
+    // Перемешиваем и берём 28 случайных
+    for (let i = cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    const random28 = cards.slice(0, 28);
+    const gallery = document.getElementById('randomGallery');
+    random28.forEach(card => {
+      const el = document.createElement('img');
+      el.src = card.image;
+      el.alt = card.title;
+      el.title = card.title;
+      el.onclick = () => {
+        window.location.href = `view.html?img=${encodeURIComponent(card.image)}&title=${encodeURIComponent(card.title)}`;
+      };
+      gallery.appendChild(el);
+    });
+  });
+</script>
+<script src="script.js"></script>
+</body>
+</html> 

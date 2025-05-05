@@ -1,4 +1,3 @@
-
 // ==================== МОДАЛЬНОЕ ОКНО ====================
 const modal = document.getElementById('modal');
 const modalImage = document.getElementById('modalImage');
@@ -125,4 +124,12 @@ window.addEventListener('DOMContentLoaded', () => {
       break;
     }
   }
+});
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('click', () => {
+    const image = card.getAttribute('data-image');
+    const title = card.getAttribute('data-title');
+    window.open(`view.html?img=${encodeURIComponent(image)}&title=${encodeURIComponent(title)}`, '_blank');
+  });
 });
