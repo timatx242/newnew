@@ -62,6 +62,10 @@
     .random-gallery img:hover {
       transform: scale(1.04);
     }
+    .footer-center {
+      text-align: center;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -73,10 +77,18 @@
       </a>
     </div>
   </div>
-  <div class="header-center"></div>
+  <div class="header-center">
+    <form class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#767676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search...">
+    </form>
+  </div>
   <div class="header-right">
     <button id="termsBtn" class="terms-button">
-      <img src="../Terms of Use.png" alt="Terms of Use" />
+      <img src="../terms-of-use.png" alt="Terms of Use" />
     </button>
   </div>
 </header>
@@ -104,9 +116,8 @@ shareBtn.addEventListener('click', () => {
 });
 </script>
 <footer class="site-footer">
-  <div class="footer-links">
-      <a href="../terms.html" class="footer-link">Terms of use</a>
-      <a href="../contact.html" class="footer-link">Contact us</a>
+  <div class="footer-center">
+    <a href="../contact.html" class="footer-link">Contact us</a>
   </div>
   <div class="footer-copyright">
       Copyright © 2025 <a href="https://colorpdf.com">colorpdf.com</a>
