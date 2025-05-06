@@ -34,7 +34,7 @@ if (!fs.existsSync(GALLERY_DIR)) {
     return {
       name: baseName,
       pdf: pdfEntry ? pdfEntry.pdf : "#",
-      imgPath: `image/${img}`
+      imgPath: `../image/${img}`
     };
   });
 
