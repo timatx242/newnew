@@ -1,48 +1,3 @@
-// ==================== МОДАЛЬНОЕ ОКНО ====================
-const modal = document.getElementById('modal');
-const modalImage = document.getElementById('modalImage');
-const modalTitle = document.getElementById('modalTitle');
-const modalDescription = document.getElementById('modalDescription');
-const downloadBtn = document.getElementById('downloadBtn');
-const closeModal = document.getElementById('closeModal');
-
-document.querySelectorAll('.card').forEach(card => {
-  card.addEventListener('click', () => {
-    const image = card.getAttribute('data-image');
-    const title = card.getAttribute('data-title');
-    const description = card.getAttribute('data-description');
-    const pdf = card.getAttribute('data-pdf');
-
-    modalImage.src = image;
-    modalTitle.textContent = title;
-    modalDescription.textContent = description;
-
-    if (pdf && pdf !== '#') {
-      downloadBtn.setAttribute('href', pdf);
-      downloadBtn.setAttribute('download', '');
-    } else {
-      downloadBtn.setAttribute('href', '#');
-      downloadBtn.removeAttribute('download');
-    }
-
-    modal.classList.add('show');
-    const hash = title.replace(/\s+/g, '-');
-    history.replaceState(null, "", `#${hash}`);
-  });
-});
-
-closeModal.addEventListener('click', () => {
-  modal.classList.remove('show');
-  history.replaceState(null, "", location.pathname);
-});
-
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) {
-    modal.classList.remove('show');
-    history.replaceState(null, "", location.pathname);
-  }
-});
-
 // ==================== ПОИСК ====================
 const searchInput = document.getElementById('searchInput');
 const noResults = document.getElementById('noResults');
@@ -103,14 +58,9 @@ fetch("https://script.google.com/macros/s/AKfycbysxY9hP1_gHHiVZNdZ3p3vmXJj79nfJ6
         card.setAttribute("data-pdf", match.pdf);
       }
     });
-
-    // Открыть модалку если есть hash
-    const urlHash = decodeURIComponent(location.hash.slice(1)).replace(/-/g, ' ').toLowerCase();
-    const targetCard = [...allCards].find(card => card.getAttribute("data-title").toLowerCase() === urlHash);
-    if (targetCard) targetCard.click();
   });
 
-  // ==================== ОТКРЫТИЕ КАРТОЧКИ ПО ЯКОРЮ ====================
+// ==================== ОТКРЫТИЕ КАРТОЧКИ ПО ЯКОРЮ ====================
 window.addEventListener('DOMContentLoaded', () => {
   const hash = decodeURIComponent(window.location.hash.substring(1));
   if (!hash) return;
