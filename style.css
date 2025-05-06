@@ -283,13 +283,13 @@ main#gallery {
 }
 .site-footer .footer-link {
   margin: 0 30px;
-  color: #1976d2;
+  color: #444;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 .site-footer .footer-link:hover {
-  color: #0d47a1;
+  color: #444;
   text-decoration: underline;
 }
 .site-footer .footer-copyright {
@@ -297,7 +297,7 @@ main#gallery {
   color: #444;
 }
 .site-footer .footer-copyright a {
-  color: #1976d2;
+  color: #444;
   text-decoration: none;
 }
 .site-footer .footer-copyright a:hover {
