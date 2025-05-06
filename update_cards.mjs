@@ -15,6 +15,11 @@ const SHEET_API_URL = "https://script.googleusercontent.com/macros/echo?user_con
 const IMAGES_DIR = path.join(__dirname, "image");
 const HTML_FILE = path.join(__dirname, "index.html");
 const VIEW_TEMPLATE = path.join(__dirname, "view.html");
+const GALLERY_DIR = path.join(__dirname, "gallery");
+
+if (!fs.existsSync(GALLERY_DIR)) {
+  fs.mkdirSync(GALLERY_DIR);
+}
 
 (async () => {
   const res = await fetch(SHEET_API_URL);
@@ -48,7 +53,7 @@ const VIEW_TEMPLATE = path.join(__dirname, "view.html");
 
   fs.writeFileSync(HTML_FILE, html, "utf8");
 
-  // Генерация отдельных страниц для каждой картинки
+  // Генерация отдельных страниц для каждой картинки в папке gallery
   const viewTemplate = fs.readFileSync(VIEW_TEMPLATE, "utf8");
   function slugify(str) {
     return str.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-+/g, '-');
@@ -64,8 +69,8 @@ const VIEW_TEMPLATE = path.join(__dirname, "view.html");
     // Оставляем только кнопку share (копировать ссылку)
     page = page.replace('</main>', `</main>\n<script>\nconst shareBtn = document.getElementById('shareBtn');\nshareBtn.addEventListener('click', () => {\n  const shareUrl = window.location.href;\n  if (navigator.share) {\n    navigator.share({ title: document.title, url: shareUrl });\n  } else {\n    navigator.clipboard.writeText(shareUrl).then(() => {\n      shareBtn.textContent = 'Copied!';\n      setTimeout(() => shareBtn.textContent = 'Share', 1500);\n    });\n  }\n});\n</script>`);
     const fileName = slugify(card.name) + ".html";
-    fs.writeFileSync(path.join(__dirname, fileName), page, "utf8");
+    fs.writeFileSync(path.join(GALLERY_DIR, fileName), page, "utf8");
   }
 
-  console.log("✅ Готово! Файлы для каждой картинки созданы.");
+  console.log("✅ Готово! Файлы для каждой картинки созданы в папке gallery.");
 })();

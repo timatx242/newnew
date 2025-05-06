@@ -80,6 +80,6 @@ document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('click', () => {
     const title = card.getAttribute('data-title');
     const slug = title.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').replace(/-+/g, '-');
-    window.location.href = `${slug}.html`;
+    window.location.href = `gallery/${slug}.html`;
   });
 });
